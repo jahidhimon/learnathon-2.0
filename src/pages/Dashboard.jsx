@@ -23,7 +23,7 @@ const Profile = () => {
 };
 
 export default function Dashboard() {
-	const { isAuthenticated } = useAuth0();
+	const { isAuthenticated, logout } = useAuth0();
 
 	if (!isAuthenticated) {
 		return <Navigate to="/" />
@@ -45,6 +45,7 @@ export default function Dashboard() {
 					Logout
 				</button>
 			</div>
+			
 			<Profile />
 			<div className="flex justify-between text-2xl pt-4">
 				<div className="text-blue-300">

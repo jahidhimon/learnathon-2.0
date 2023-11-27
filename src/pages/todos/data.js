@@ -6,71 +6,80 @@ class Todo {
 	}
 }
 
-const latestId = 1
+var latestId = 0;
 
-// Private functions 
 function getAllTodos(username) {
-	const todos = window.localStorage.getItem(username);
+	var todos = window.localStorage.getItem(username);
+	if (todos == null) {
+		return [];
+	}
 	return JSON.parse(todos);
 }
 
 function setAllTodos(username, todos) {
-	window.localStorage.setItem(username, JSON.stringify(todos))
+	window.localStorage.setItem(username, JSON.stringify(todos));
 }
 
-
-// Operations on one todo
-
-function getTodo({ nickname }, id) {
-	const todos = getAllTodos(nickname);
-	return todos.find((todo) => id == todo.id)
+// Operations on single todo
+function getTodoById(username, id) {
+	var todos = getAllTodos(username);
+	return todos.find(function (todo) { return id == todo.id; });
 }
 
-function deleteTodo({ nickname }, id) {
-	let todos = getAllTodos(nickname);
-	const todo = getTodo(nickname, id);
-	const index = todos.indexOf(todo);
-	if (todo) {
-		todos.splice(index, 1);
+function getTodoByTask(username, task) {
+	var todos = getAllTodos(username);
+	return todos.find(function (todo) { return task == todo.task; });
+}
+
+function deleteTodo(username, id) {
+	var todos = getAllTodos(username);
+	var todo = getTodoById(username, id);
+	if (todo == undefined) {
+		return false;
 	}
-
-	setAllTodos(nickname, todos);
+	var index = todos.indexOf(todo);
+	todos.splice(index, 1);
+	setAllTodos(username, todos);
+	return true;
 }
 
-function completeTodo({ nickname }, id) {
-	let todos = getAllTodos(nickname);
-	let todo = getTodo(nickname, id);
-	todo.done = true;
-
-	setAllTodos(nickname, todos);
+function deleteAllTodos(username) {
+	window.localStorage.removeItem(username);
 }
 
-function appendTodo({ nickname }, task) {
-	const todo = new Todo(task, latestId++);
-	let todos = getAllTodos(nickname);
+function completeTodo(username, id) {
+	var all = getAllTodos(username);
+	var todos = all.map(function (todo) {
+		if (todo.id == id) {
+			todo.done = true;
+		}
+		return todo;
+	});
+	setAllTodos(username, todos);
+}
 
-	todos.append(todo);
-
-	setAllTodos(nickname, todos)
+function appendTodo(username, task) {
+	if (getTodoByTask(username, task) != undefined) {
+		return;
+	}
+	var todo = new Todo(task, ++latestId);
+	var todos = getAllTodos(username);
+	todos.push(todo);
+	setAllTodos(username, todos);
 }
 
 // Get list of todos
-function completedTodos({ nickname }) {
-	const todos = getAllTodos(nickname);
-	return todos.filter((todo) => todo.done)
+function completedTodos(username) {
+	var todos = getAllTodos(username);
+	return todos.filter(function (todo) { return todo.done; });
 }
 
-function dueTodos({ nickname }) {
-	const todos = getAllTodos(nickname);
-	return todos.filter((todo) => !todo.done)
+function dueTodos(username) {
+	var todos = getAllTodos(username);
+	return todos.filter(function (todo) { return !todo.done; });
 }
 
 // Count
-
-function allTodosCount({ nickname }) {
-	return getAllTodos(nickname).length
+function allTodosCount(username) {
+	return getAllTodos(username).length;
 }
-
-
-
-

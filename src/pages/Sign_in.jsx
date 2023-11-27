@@ -5,7 +5,7 @@ export default function Login() {
 	const { loginWithRedirect, isAuthenticated } = useAuth0();
 	
 	if (isAuthenticated) {
-		return <Navigate to="/dashboard" />
+		return <Navigate to="/dashboard" replace={true} />
 	}
 
 	return (
